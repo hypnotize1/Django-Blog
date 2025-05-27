@@ -27,13 +27,15 @@ class Post(models.Model):
     views = models.IntegerField(default=0)
     categories = models.ManyToManyField(Category, related_name='posts')
     tags = models.ManyToManyField(Tag, related_name='posts')
+    slug = models.SlugField(max_length=200, unique=True, default='default-slug')
+
 
     def __str__(self):
         return self.title
 
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
