@@ -23,7 +23,6 @@ class CustomLoginView(LoginView):
     template_name = 'accounts/login.html'
     redirect_authenticated_user = True
     authentication_form = CustomAuthenticationForm
-    success_url = reverse_lazy('blog:post_list')
 
     def get_success_url(self):
         return reverse_lazy('blog:post_list')
