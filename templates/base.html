@@ -1,56 +1,86 @@
-<!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>{% block title %}Blog{% endblock %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- ریسپانسیو مهم -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> <!-- Responsive Meta Tag -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css"
+    />
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-      <div class="container">
-        <a class="navbar-brand" href="{% url 'blog:post_list' %}">My Blog</a>
 
-        <!-- دکمه تاگل برای موبایل -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="تغییر ناوبری">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <!-- بخش منو -->
-        <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
-          <ul class="navbar-nav">
-            {% if user.is_authenticated %}
-              <li class="nav-item">
-                <form method="post" action="{% url 'accounts:logout' %}">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
-                </form>
-              </li>
-            {% else %}
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'accounts:signup' %}">SignUp</a>
-              </li>
-            {% endif %}
-          </ul>
-        </div>
-      </div>
-    </nav>
-
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container">
-        {% block content %}
-        {% endblock %}
+      <a class="navbar-brand" href="{% url 'blog:post_list' %}">My Blog</a>
+
+      <!-- Mobile toggle button -->
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarContent"
+        aria-controls="navbarContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Navbar links -->
+      <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
+        <ul class="navbar-nav">
+
+          <!-- Always show Profile link -->
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'accounts:profile' %}">Profile</a>
+          </li>
+
+          <!-- Show Create Post only on Profile page and if user is authenticated -->
+          {% if user.is_authenticated and request.resolver_match.url_name == 'profile' %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'blog:post_create' %}">Create Post</a>
+          </li>
+          {% endif %}
+
+          <!-- Authentication Links -->
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+            <form method="post" action="{% url 'accounts:logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+            </form>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'accounts:signup' %}">Sign Up</a>
+          </li>
+          {% endif %}
+
+        </ul>
+      </div>
     </div>
+  </nav>
 
-    <footer class="text-center mt-5 mb-3 text-muted">
-        <hr>
-        &copy; {{ now|date:"Y" }} my blog
-    </footer>
+  <!-- Main Content -->
+  <div class="container">
+    {% block content %}
+    {% endblock %}
+  </div>
 
-    <!-- Bootstrap JS for toggler functionality -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Footer -->
+  <footer class="text-center mt-5 mb-3 text-muted">
+    <hr />
+    &copy; {{ now|date:"Y" }} my blog
+  </footer>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

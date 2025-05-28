@@ -21,14 +21,6 @@
                     Continue reading...
                 </a>
 
-                {% if user == post.author %}
-                    <a href="{% url 'blog:post_update' post.pk %}" class="btn btn-outline-secondary btn-sm ms-2">
-                        Edit
-                    </a>
-                    <a href="{% url 'blog:post_delete' post.pk %}" class="btn btn-outline-danger btn-sm ms-1">
-                        Delete
-                    </a>
-                {% endif %}
             </div>
         </div>
     {% empty %}

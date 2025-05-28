@@ -2,6 +2,9 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 
+from accounts.models import Profile
+
+
 class CustomSignupForm(UserCreationForm):
     email = forms.EmailField(required=True)
     class Meta:
@@ -19,3 +22,9 @@ class CustomAuthenticationForm(AuthenticationForm):
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
             field.widget.attrs['placeholder'] = field.label
+
+
+class EditProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['age', 'bio', 'profile_pic']

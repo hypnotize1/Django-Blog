@@ -1,11 +1,13 @@
-from django.shortcuts import get_object_or_404
-from django.views.generic import ListView, DeleteView, DetailView, CreateView, UpdateView
-from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.utils.text import slugify
 from django.db.models import F
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
+from django.utils.text import slugify
+from django.views.generic import ListView, DeleteView, DetailView, CreateView, UpdateView
+
 from .forms import PostCreateForm
 from .models import *
+
 
 # Create your views here.
 class PostListView(ListView):
@@ -30,6 +32,7 @@ class PostDetailView(DetailView):
         Post.objects.filter(pk=post.pk).update(views=F('views') + 1)
         post.refresh_from_db()
         return post
+
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
