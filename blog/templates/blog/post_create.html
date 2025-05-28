@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Create New Post{% endblock %}
+
+{% block content %}
+<h2>Create Post</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="mb-3">
+        {{ form.title.label_tag }}
+        {{ form.title }}
+        {{ form.title.errors }}
+    </div>
+    <div class="mb-3">
+        {{ form.content.label_tag }}
+        {{ form.content }}
+        {{ form.content.errors }}
+    </div>
+    <div class="form-check mb-3">
+        {{ form.is_published }}
+        {{ form.is_published.label_tag }}
+        {{ form.is_published.errors }}
+    </div>
+    <div class="mb-3">
+        {{ form.categories.label_tag }}
+        {{ form.categories }}
+        {{ form.categories.errors }}
+    </div>
+    <div class="mb-3">
+        {{ form.tags.label_tag }}
+        {{ form.tags }}
+        {{ form.tags.errors }}
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+{% endblock %}

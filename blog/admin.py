@@ -27,6 +27,7 @@ class PostAdmin(admin.ModelAdmin):
     filter_horizontal = ('categories', 'tags')
     inlines = [CommentInline]
     readonly_fields = ('created_at', 'updated_at', 'views')
+    prepopulated_fields = {'slug': ('title',)}
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):

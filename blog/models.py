@@ -18,6 +18,7 @@ class Tag(models.Model):
 
 
 class Post(models.Model):
+    objects = None
     title = models.CharField(max_length=200)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -27,7 +28,7 @@ class Post(models.Model):
     views = models.IntegerField(default=0)
     categories = models.ManyToManyField(Category, related_name='posts')
     tags = models.ManyToManyField(Tag, related_name='posts')
-    slug = models.SlugField(max_length=200, unique=True, default='default-slug')
+    slug = models.SlugField(max_length=200, unique=True)
 
 
     def __str__(self):
