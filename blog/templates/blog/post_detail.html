@@ -1,50 +1,69 @@
-<!-- templates/blog/post_detail.html -->
 {% extends "base.html" %}
 
 {% block title %}{{ post.title }}{% endblock %}
 
 {% block content %}
-<article class="mb-5">
-    <h1>{{ post.title }}</h1>
-    <p class="text-muted">Author: {{ post.author.username }} | {{ post.created_at|date:"Y/m/d H:i" }}</p>
-    <hr>
-    <p>{{ post.content|linebreaks }}</p>
-    <hr>
-    <p class="text-muted">Views: {{ post.views }}</p>
-    <hr>
-    <p class="text-muted">Views: {{ post.views }}</p>
+    <article class="mb-5">
+        <h1>{{ post.title }}</h1>
+        <p class="text-muted">Author: {{ post.author.username }} | {{ post.created_at|date:"Y/m/d H:i" }}</p>
+        <hr>
+        <p>{{ post.content|linebreaks }}</p>
+        <hr>
+        <p class="text-muted">Views: {{ post.views }}</p>
 
-    {% if user.is_authenticated and user == post.author %}
-        <div class="mb-3">
-            <a href="{% url 'blog:post_update' post.pk %}" class="btn btn-sm btn-warning">Edit</a>
-            <a href="{% url 'blog:post_delete' post.pk %}" class="btn btn-sm btn-danger">Delete</a>
-        </div>
-    {% endif %}
-
-    <p>Categories
-        {% for category in post.categories.all %}
-            <span class="badge bg-secondary">{{ category.name }}</span>
-        {% endfor %}
-    </p>
-    <p>Tags
-        {% for tag in post.tags.all %}
-            <span class="badge bg-info text-dark">{{ tag.name }}</span>
-        {% endfor %}
-    </p>
-</article>
-
-<section>
-    <h4>Comments</h4>
-    {% for comment in post.comments.all %}
-        {% if comment.approved %}
-            <div class="border rounded p-3 mb-2">
-                <strong>{{ comment.author.username }}</strong>
-                <p>{{ comment.content }}</p>
-                <small class="text-muted">{{ comment.created_at|date:"Y/m/d H:i" }}</small>
+        {% if user.is_authenticated and user == post.author %}
+            <div class="mb-3">
+                <a href="{% url 'blog:post_update' post.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                <a href="{% url 'blog:post_delete' post.pk %}" class="btn btn-sm btn-danger">Delete</a>
             </div>
         {% endif %}
-    {% empty %}
-        <p>No comments yet!</p>
-    {% endfor %}
-</section>
+
+        <p>Categories:
+            {% for category in post.categories.all %}
+                <span class="badge bg-secondary">{{ category.name }}</span>
+            {% endfor %}
+        </p>
+        <p>Tags:
+            {% for tag in post.tags.all %}
+                <span class="badge bg-info text-dark">{{ tag.name }}</span>
+            {% endfor %}
+        </p>
+    </article>
+
+    <section class="mt-5">
+        <h4>Comments</h4>
+        {% for comment in comments %}
+            {% if comment.approved %}
+                <div class="border rounded p-3 mb-2">
+                    <strong>{{ comment.author.username }}</strong>
+                    <p>{{ comment.content }}</p>
+                    <small class="text-muted">{{ comment.created_at|date:"Y/m/d H:i" }}</small>
+                </div>
+            {% endif %}
+        {% empty %}
+            <p>No comments yet.</p>
+        {% endfor %}
+    </section>
+
+    {% if user.is_authenticated %}
+        <section class="mt-5">
+            <h5>Leave a Comment</h5>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="{{ comment_form.content.id_for_label }}" class="form-label">Comment</label>
+                    {{ comment_form.content }}
+                    {% if comment_form.content.errors %}
+                        <div class="text-danger">
+                            {{ comment_form.content.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </section>
+    {% else %}
+        <p class="mt-4">To leave a comment, please <a href="{% url 'accounts:login' %}">log in</a> first.</p>
+    {% endif %}
+
 {% endblock %}

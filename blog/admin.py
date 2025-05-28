@@ -32,7 +32,8 @@ class PostAdmin(admin.ModelAdmin):
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('post', 'author', 'created_at', 'approved')
-    list_filter = ('approved', 'created_at')
-    search_fields = ('content', 'author__username')
+    list_filter = ('approved', 'created_at', 'post')
+    search_fields = ('content', 'author__username', 'post__title')
     ordering = ('-created_at',)
+    list_editable = ('approved',)
     readonly_fields = ('created_at',)

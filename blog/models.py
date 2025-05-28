@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 # Create your models here.
 
@@ -33,17 +34,30 @@ class Post(models.Model):
     class Meta:
         ordering = ['-created_at']
 
+    def get_absolute_url(self):
+        return reverse('blog:post_detail', kwargs={'post_pk': self.pk, 'post_slug': self.slug})
+
     def __str__(self):
         return self.title
 
 
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = models.TextField()
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_comments')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_comments')
+    content = models.TextField(max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)
     approved = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def approve(self):
+        self.approved = True
+        self.save()
+
+    def get_absolute_url(self):
+        return self.post.get_absolute_url()
 
     def __str__(self):
         return f'Comment by {self.author.username} on {self.post.title}'

@@ -1,11 +1,13 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import F
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.utils.text import slugify
 from django.views.generic import ListView, DeleteView, DetailView, CreateView, UpdateView
 
-from .forms import PostCreateForm
+from .forms import PostCreateForm, CommentCreateForm
 from .models import *
 
 
@@ -25,6 +27,12 @@ class PostDetailView(DetailView):
     template_name = 'blog/post_detail.html'
     context_object_name = 'post'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = Comment.objects.filter(post=self.object)
+        context['comment_form'] = CommentCreateForm()
+        return context
+
     def get_object(self):
         post_pk = self.kwargs.get('post_pk')
         post_slug = self.kwargs.get('post_slug')
@@ -32,6 +40,21 @@ class PostDetailView(DetailView):
         Post.objects.filter(pk=post.pk).update(views=F('views') + 1)
         post.refresh_from_db()
         return post
+
+    @method_decorator(login_required())
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = CommentCreateForm(request.POST)
+        if form.is_valid():
+            new_comment = form.save(commit=False)
+            new_comment.post = self.object
+            new_comment.author = request.user
+            new_comment.save()
+            return redirect(self.object.get_absolute_url())
+
+        context = self.get_context_data()
+        context['comment_form'] = form
+        return self.render_to_response(context)
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
