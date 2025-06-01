@@ -32,6 +32,7 @@ class PostListView(ListView):
         context = super().get_context_data(**kwargs)
         context['search_form'] = PostSearchForm(self.request.GET)
         return context
+
 class PostDetailView(DetailView):
     model = Post
     template_name = 'blog/post_detail.html'

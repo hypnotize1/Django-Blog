@@ -13,7 +13,7 @@ from django.contrib.auth.views import (LoginView,
                                        PasswordResetDoneView,
                                        PasswordResetCompleteView
                                        )
-from accounts.forms import CustomAuthenticationForm, EditProfileForm
+from accounts.forms import CustomAuthenticationForm, EditProfileForm, CustomSignupForm
 from accounts.models import Profile
 from blog.models import Post
 
@@ -22,7 +22,7 @@ from blog.models import Post
 
 class CustomSignUpView(CreateView):
     model = User
-    form_class = UserCreationForm
+    form_class = CustomSignupForm
     template_name = 'accounts/signup.html'
     success_url = reverse_lazy('blog:post_list')
     def form_valid(self, form):
@@ -34,10 +34,16 @@ class CustomLoginView(LoginView):
     template_name = 'accounts/login.html'
     redirect_authenticated_user = True
     authentication_form = CustomAuthenticationForm
+    redirect_field_name = 'next'
 
     def get_success_url(self):
-        messages.success(self.request, f'Welcome {self.request.user.username}!')
+        user = self.request.user
+        messages.success(self.request, f'Welcome Back {user.username}!')
+        next_url = self.request.GET.get(self.redirect_field_name)
+        if next_url:
+            return next_url
         return reverse_lazy('blog:post_list')
+
 
 class CustomLogoutView(LogoutView):
     next_page = reverse_lazy('accounts:login')
