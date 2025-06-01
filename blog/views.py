@@ -7,6 +7,7 @@ from django.utils.decorators import method_decorator
 from django.utils.text import slugify
 from django.views.generic import ListView, DeleteView, DetailView, CreateView, UpdateView
 from django.core.paginator import Paginator
+from django.contrib import messages
 
 from .forms import PostCreateForm, CommentCreateForm
 from .models import *
@@ -56,6 +57,7 @@ class PostDetailView(DetailView):
             new_comment.post = self.object
             new_comment.author = request.user
             new_comment.save()
+            messages.success(request, 'Your comment has been successfully submitted and will be displayed after approval. ')
             return redirect(self.object.get_absolute_url())
 
         context = self.get_context_data()
@@ -72,6 +74,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.slug = slugify(form.cleaned_data['title'])
+        messages.success(self.request, 'Post successfully created.')
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -85,6 +88,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def form_valid(self, form):
         form.instance.slug = slugify(form.cleaned_data['title'])
+        messages.success(self.request, 'Post successfully updated.')
         return super().form_valid(form)
 
     def test_func(self):
@@ -105,3 +109,7 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return reverse_lazy('accounts:profile')
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'Post successfully deleted.')
+        return super().delete(request, *args, **kwargs)

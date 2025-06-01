@@ -1,12 +1,18 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
-from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, PasswordResetConfirmView, \
-    PasswordResetDoneView, PasswordResetCompleteView
+
 from django.urls import reverse_lazy
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
-
+from django.contrib import messages
+from django.contrib.auth.views import (LoginView,
+                                       LogoutView,
+                                       PasswordResetView,
+                                       PasswordResetConfirmView,
+                                       PasswordResetDoneView,
+                                       PasswordResetCompleteView
+                                       )
 from accounts.forms import CustomAuthenticationForm, EditProfileForm
 from accounts.models import Profile
 from blog.models import Post
@@ -19,6 +25,10 @@ class CustomSignUpView(CreateView):
     form_class = UserCreationForm
     template_name = 'accounts/signup.html'
     success_url = reverse_lazy('blog:post_list')
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Account created. Now you can login')
+        return response
 
 class CustomLoginView(LoginView):
     template_name = 'accounts/login.html'
@@ -26,6 +36,7 @@ class CustomLoginView(LoginView):
     authentication_form = CustomAuthenticationForm
 
     def get_success_url(self):
+        messages.success(self.request, f'Welcome {self.request.user.username}!')
         return reverse_lazy('blog:post_list')
 
 class CustomLogoutView(LogoutView):
@@ -58,6 +69,10 @@ class UserProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
     def test_func(self):
         return self.request.user == self.get_object().user
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Profile updated successfully')
+        return response
 
 class UserPasswordResetView(PasswordResetView):
     template_name = 'accounts/password_reset.html'

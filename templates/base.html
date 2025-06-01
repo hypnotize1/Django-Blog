@@ -1,3 +1,4 @@
+{% load django_bootstrap5 %}
 <!DOCTYPE html>
 <html lang="fa">
 <head>
@@ -66,6 +67,13 @@
       </div>
     </div>
   </nav>
+
+  <!-- Messages -->
+  <div class="container">
+    {% if messages %}
+      {% bootstrap_messages %}
+    {% endif %}
+  </div>
 
   <!-- Main Content -->
   <div class="container">
