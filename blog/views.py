@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import F
 from django.shortcuts import redirect
+from django.template.defaultfilters import title
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.text import slugify
@@ -9,7 +10,7 @@ from django.views.generic import ListView, DeleteView, DetailView, CreateView, U
 from django.core.paginator import Paginator
 from django.contrib import messages
 
-from .forms import PostCreateForm, CommentCreateForm
+from .forms import PostCreateForm, CommentCreateForm, PostSearchForm
 from .models import *
 
 
@@ -21,9 +22,16 @@ class PostListView(ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        return Post.objects.filter(is_published=True).select_related('author').order_by('-created_at')
+        query_set = Post.objects.filter(is_published=True).select_related('author').order_by('-created_at')
+        query = self.request.GET.get('q')
+        if query:
+            query_set = query_set.filter(title__icontains=query)
+        return query_set
 
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search_form'] = PostSearchForm(self.request.GET)
+        return context
 class PostDetailView(DetailView):
     model = Post
     template_name = 'blog/post_detail.html'

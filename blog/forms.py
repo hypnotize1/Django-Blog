@@ -21,3 +21,6 @@ class CommentCreateForm(forms.ModelForm):
         widgets = {
             'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'comment content', 'rows': 4}),
         }
+
+class PostSearchForm(forms.Form):
+    q = forms.CharField(label='Search', required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
